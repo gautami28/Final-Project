@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Combined Analysis{% endblock %}
+{% block content %}
+<h2 class="mb-3">Combined Analysis</h2>
+<p>This chart combines stock price trend (line) and news sentiment (bar) together for a complete analysis.</p>
+{% if plot_json %}
+  <div id="combo-plot"></div>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    var plotly_data = {{ plot_json|safe }};
+    Plotly.newPlot('combo-plot', plotly_data["data"], plotly_data["layout"]);
+  </script>
+{% endif %}
+{% endblock %}

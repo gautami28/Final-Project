@@ -1,0 +1,105 @@
+/* Main gradient backgrounds */
+.main-bg {
+  background: linear-gradient(135deg, #e3ecfc 0%, #f6fbf4 100%);
+  min-height: 100vh;
+}
+
+/* Navbar accent */
+.nav-gradient {
+  background: linear-gradient(135deg, #288cfa 70%, #6fc6fc 100%) !important;
+}
+
+/* Card gradients and accents */
+.kpi-gradient-green {
+  background: linear-gradient(95deg, #d7f7e7 0%, #e2f7fa 100%);
+}
+.kpi-gradient-red {
+  background: linear-gradient(95deg, #faeaea 0%, #ffe6e9 100%);
+}
+.metric-card-accent-1 { border-top: 4px solid #288cfa; }
+.metric-card-accent-2 { border-top: 4px solid #44d97a; }
+.metric-card-accent-3 { border-top: 4px solid #fea962; }
+.metric-card-accent-4 { border-top: 4px solid #8f76ff; }
+.ai-card-gradient {
+  background: linear-gradient(90deg, #f6fbfc 40%, #deedfa 100%);
+}
+.tool-gradient-prediction {
+  background: linear-gradient(110deg, #eaf6ff 0%, #fff 100%);
+}
+.tool-gradient-analysis {
+  background: linear-gradient(110deg, #e5f6ee 0%, #fff 100%);
+}
+.tool-gradient-sentiment {
+  background: linear-gradient(110deg, #fff9e9 0%, #fff 100%);
+}
+.tool-gradient-chat {
+  background: linear-gradient(90deg, #ebfff5 0%, #fff 100%);
+}
+.icon-gradient {
+  background: linear-gradient(90deg,#288cfa 50%,#44d97a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.table-gradient {
+  background: linear-gradient(90deg, #f7fafc 60%, #f2f7fb 100%);
+}
+
+/* Hero KPI */
+.hero-kpi {
+  border-left: 6px solid;
+  min-height: 120px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  background: #fff;
+}
+.metric-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(40,140,250,0.05);
+  padding: 1rem 1.1rem;
+}
+/* Mini AI prediction cards */
+.ai-prediction-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(40,140,250,0.10);
+  background: #fff;
+}
+/* Feature cards */
+.tool-card {
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(40,140,250,0.08);
+  transition: transform 0.2s;
+  background: #fff;
+}
+.tool-card:hover { transform: translateY(-5px) scale(1.03); }
+/* Stock Table/Watchlist */
+.big-card {
+  min-height: 320px;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(40,140,250,0.07);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+/* Scrollable body */
+.scroll-table { max-height: 260px; overflow-y: auto; }
+.table th, .table td { vertical-align: middle; font-size: 1.04rem; }
+.table-hover tbody tr:hover { background-color: #e6f1fe; }
+.card-header { font-size: 1.15rem; font-weight: 600; background: #f2f7fb; border-bottom: none; }
+.btn-outline-primary {
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 0.3rem 1rem;
+}
+.btn-outline-primary:hover { background-color: #1a5edb; color: #fff; }
+@media (max-width: 991px) {
+  .hero-kpi { min-height: 100px; }
+  .ai-prediction-card, .metric-card { min-height: 80px; }
+  .scroll-table { max-height: 180px; }
+}
+@media (max-width: 768px) {
+  .tool-card, .big-card { min-height: auto; }
+  .row { margin-bottom: 0.4rem; }
+  .scroll-table { max-height: 130px; }
+}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}News Sentiment{% endblock %}
+
+{% block content %}
+<h2>News Sentiment Analysis</h2>
+<p>Paste a news headline or text below to get sentiment score (demo).</p>
+
+<form id="sentimentForm" class="mb-3" onsubmit="return analyzeSentiment(event)">
+    <div class="mb-3">
+        <textarea id="newsText" class="form-control" rows="4" placeholder="Enter news headline or text" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Analyze</button>
+</form>
+
+<div id="sentimentResult"></div>
+
+<script>
+async function analyzeSentiment(event) {
+    event.preventDefault();
+    const text = document.getElementById('newsText').value;
+    const resultDiv = document.getElementById('sentimentResult');
+    resultDiv.innerHTML = '<div class="alert alert-info">Analyzing...</div>';
+    try {
+        const response = await fetch('/analyze_sentiment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+        });
+        const data = await response.json();
+        resultDiv.innerHTML = `
+            <div class="alert alert-info">
+                Sentiment: <strong>${data.sentiment}</strong> (Score: ${data.score})
+            </div>
+        `;
+    } catch (error) {
+        resultDiv.innerHTML = '<div class="alert alert-danger">Error analyzing sentiment. Please try again.</div>';
+    }
+    return false;
+}
+</script>
+{% endblock %}

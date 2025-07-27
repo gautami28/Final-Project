@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}AI Chatbot{% endblock %}
+
+{% block content %}
+<h2>AI Chatbot</h2>
+<p>Ask questions about stocks. This is a demo chat frontend (no backend integration yet).</p>
+
+<div class="mb-3">
+    <textarea id="chatInput" class="form-control" rows="2" placeholder="Type your question here"></textarea>
+</div>
+<button class="btn btn-primary mb-3" onclick="sendMessage()">Send</button>
+
+<!-- FAQ/Suggested Questions -->
+<div class="mb-3">
+    <strong>Suggested Questions:</strong>
+    <div>
+        <button type="button" class="btn btn-outline-secondary btn-sm m-1" onclick="suggestedQuestion('What is a stock?')">What is a stock?</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm m-1" onclick="suggestedQuestion('How do I use the dashboard?')">How do I use the dashboard?</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm m-1" onclick="suggestedQuestion('What is sentiment analysis?')">What is sentiment analysis?</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm m-1" onclick="suggestedQuestion('What is the price of AAPL?')">What is the price of AAPL?</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm m-1" onclick="suggestedQuestion('Thank you!')">Thank you!</button>
+    </div>
+</div>
+
+<div id="chatBox" style="border:1px solid #ccc; padding:15px; height:300px; overflow-y:auto; background:#f9f9f9;"></div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const chatBox = document.getElementById('chatBox');
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+
+    // Display user's message
+    chatBox.innerHTML += `<div><strong>You:</strong> ${userMessage}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Send message to backend
+    try {
+        const response = await fetch('/chatbot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        });
+        const data = await response.json();
+        chatBox.innerHTML += `<div><strong>Bot:</strong> ${data.response}</div>`;
+    } catch (error) {
+        chatBox.innerHTML += `<div><strong>Bot:</strong> Sorry, there was an error contacting the server.</div>`;
+    }
+    input.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// FAQ/Suggested Questions handler
+function suggestedQuestion(question) {
+    document.getElementById('chatInput').value = question;
+    sendMessage();
+}
+</script>
+{% endblock %}
