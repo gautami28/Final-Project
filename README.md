@@ -34,8 +34,8 @@ The application supports predictions for 50+ major stocks including:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/stock-prediction-ai.git
-cd stock-prediction-ai
+git clone https://github.com/gautami28/Final-Project.git
+cd Final-Project
 ```
 
 2. Install dependencies:
@@ -111,4 +111,4 @@ This application is for educational and research purposes only. Stock prediction
 
 ## Contact
 
-For questions or support, please open an issue on GitHub. 
+For questions or support, please open an issue on GitHub.
