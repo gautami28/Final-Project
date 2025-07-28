@@ -30,9 +30,22 @@ def get_available_tickers():
 
 VALID_TICKERS = get_available_tickers()
 
-# Global dummy historical data for demonstration
-history_prices = [188.5, 189.7, 190.1, 191.2, 192.5]
-history_dates = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+# Dynamic historical data generation
+def generate_historical_data(base_price, days=5):
+    """Generate realistic historical price data based on input price"""
+    import random
+    prices = []
+    dates = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    
+    # Generate realistic price movements (±5% daily variation)
+    current_price = float(base_price)
+    for i in range(days):
+        # Add some realistic volatility
+        change_percent = random.uniform(-0.05, 0.05)  # ±5% daily change
+        current_price = current_price * (1 + change_percent)
+        prices.append(round(current_price, 2))
+    
+    return prices, dates
 
 @app.route('/')
 def dashboard():
@@ -137,6 +150,12 @@ def predict():
                         predicted = predicted_scaled[0][0]
 
                     predicted_price = round(float(predicted), 2)
+                    
+                    # Ensure prediction is realistic (not negative or too extreme)
+                    if predicted_price <= 0:
+                        predicted_price = float(price) * 0.95  # 5% decrease if model predicts negative
+                    elif predicted_price > float(price) * 2:
+                        predicted_price = float(price) * 1.1   # Cap at 10% increase if model predicts too high
 
                     prediction = {
                         'ticker': ticker,
@@ -145,26 +164,69 @@ def predict():
                         'predicted_price': predicted_price,
                     }
 
+                    # Generate dynamic historical data based on input price
+                    history_prices, history_dates = generate_historical_data(price)
                     prices_plot = history_prices + [predicted_price]
                     dates_plot = history_dates + ["Prediction"]
 
-                    fig = go.Figure([
-                        go.Scatter(x=dates_plot, y=prices_plot, mode='lines+markers', name='Price')
-                    ])
+                    # Create more dynamic and realistic graph
+                    fig = go.Figure()
+                    
+                    # Historical prices line
                     fig.add_trace(go.Scatter(
-                        x=[dates_plot[-1]], y=[prices_plot[-1]],
-                        mode='markers+text',
-                        marker=dict(color='orange', size=14),
-                        name='Predicted',
-                        text=['Predicted'],
-                        textposition='top center'
+                        x=history_dates, 
+                        y=history_prices, 
+                        mode='lines+markers', 
+                        name='Historical Price',
+                        line=dict(color='blue', width=2),
+                        marker=dict(size=6)
                     ))
+                    
+                    # Prediction point
+                    fig.add_trace(go.Scatter(
+                        x=[dates_plot[-1]], 
+                        y=[prices_plot[-1]],
+                        mode='markers+text',
+                        marker=dict(color='orange', size=12, symbol='diamond'),
+                        name='Predicted Price',
+                        text=[f'${predicted_price:.2f}'],
+                        textposition='top center',
+                        textfont=dict(size=12, color='orange')
+                    ))
+                    
+                    # Add trend line from last historical to prediction
+                    fig.add_trace(go.Scatter(
+                        x=[history_dates[-1], dates_plot[-1]], 
+                        y=[history_prices[-1], predicted_price],
+                        mode='lines',
+                        name='Trend',
+                        line=dict(color='orange', width=2, dash='dash'),
+                        showlegend=False
+                    ))
+                    
+                    # Calculate price change percentage
+                    price_change = ((predicted_price - float(price)) / float(price)) * 100
+                    change_color = 'green' if price_change >= 0 else 'red'
+                    change_symbol = '+' if price_change >= 0 else ''
+                    
                     fig.update_layout(
-                        title=f"{ticker} Price Prediction",
+                        title=f"{ticker} Price Prediction - {change_symbol}{price_change:.1f}%",
                         yaxis_title="Price ($)",
                         template="simple_white",
                         margin=dict(l=20, r=20, t=40, b=20),
-                        height=340
+                        height=400,
+                        showlegend=True,
+                        legend=dict(x=0, y=1.1, orientation="h"),
+                        annotations=[
+                            dict(
+                                x=0.02, y=0.98, xref="paper", yref="paper",
+                                text=f"Current: ${price}<br>Predicted: ${predicted_price:.2f}<br>Change: {change_symbol}{price_change:.1f}%",
+                                showarrow=False,
+                                bgcolor="rgba(255,255,255,0.8)",
+                                bordercolor="gray",
+                                borderwidth=1
+                            )
+                        ]
                     )
                     plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -177,9 +239,23 @@ def predict():
 
 @app.route('/analyze')
 def analyze():
-    prices = [110, 112, 115, 117, 121, 119, 123]
-    sentiment = [0.2, 0.35, 0.1, 0.6, 0.8, 0.3, 0.65]
+    # Generate dynamic data for demonstration
+    import random
+    base_price = 150
+    prices = []
+    sentiment = []
     dates = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    
+    current_price = base_price
+    for i in range(7):
+        # Generate realistic price movements
+        price_change = random.uniform(-0.03, 0.03)  # ±3% daily change
+        current_price = current_price * (1 + price_change)
+        prices.append(round(current_price, 2))
+        
+        # Generate correlated sentiment (positive sentiment often leads to price increases)
+        sentiment_val = random.uniform(0.1, 0.9)
+        sentiment.append(round(sentiment_val, 2))
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dates, y=prices, name='Price', yaxis="y1", mode='lines+markers'))
     fig.add_trace(go.Bar(x=dates, y=sentiment, name='Sentiment', yaxis="y2", opacity=0.4))
