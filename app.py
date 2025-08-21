@@ -11,6 +11,14 @@ from keras.models import load_model
 from chatbot import chatbot_bp
 
 app = Flask(__name__, template_folder='new_UI/templates', static_folder='new_UI/static')
+
+# Disable caching for development
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 app.register_blueprint(chatbot_bp)
 
 # Path to models folder
@@ -107,7 +115,7 @@ def dashboard():
 def predict():
     tickers = get_available_tickers()
     prediction = None
-    plot_json = None
+
     error = None
 
     if request.method == 'POST':
@@ -164,76 +172,12 @@ def predict():
                         'predicted_price': predicted_price,
                     }
 
-                    # Generate dynamic historical data based on input price
-                    history_prices, history_dates = generate_historical_data(price)
-                    prices_plot = history_prices + [predicted_price]
-                    dates_plot = history_dates + ["Prediction"]
 
-                    # Create more dynamic and realistic graph
-                    fig = go.Figure()
-                    
-                    # Historical prices line
-                    fig.add_trace(go.Scatter(
-                        x=history_dates, 
-                        y=history_prices, 
-                        mode='lines+markers', 
-                        name='Historical Price',
-                        line=dict(color='blue', width=2),
-                        marker=dict(size=6)
-                    ))
-                    
-                    # Prediction point
-                    fig.add_trace(go.Scatter(
-                        x=[dates_plot[-1]], 
-                        y=[prices_plot[-1]],
-                        mode='markers+text',
-                        marker=dict(color='orange', size=12, symbol='diamond'),
-                        name='Predicted Price',
-                        text=[f'${predicted_price:.2f}'],
-                        textposition='top center',
-                        textfont=dict(size=12, color='orange')
-                    ))
-                    
-                    # Add trend line from last historical to prediction
-                    fig.add_trace(go.Scatter(
-                        x=[history_dates[-1], dates_plot[-1]], 
-                        y=[history_prices[-1], predicted_price],
-                        mode='lines',
-                        name='Trend',
-                        line=dict(color='orange', width=2, dash='dash'),
-                        showlegend=False
-                    ))
-                    
-                    # Calculate price change percentage
-                    price_change = ((predicted_price - float(price)) / float(price)) * 100
-                    change_color = 'green' if price_change >= 0 else 'red'
-                    change_symbol = '+' if price_change >= 0 else ''
-                    
-                    fig.update_layout(
-                        title=f"{ticker} Price Prediction - {change_symbol}{price_change:.1f}%",
-                        yaxis_title="Price ($)",
-                        template="simple_white",
-                        margin=dict(l=20, r=20, t=40, b=20),
-                        height=400,
-                        showlegend=True,
-                        legend=dict(x=0, y=1.1, orientation="h"),
-                        annotations=[
-                            dict(
-                                x=0.02, y=0.98, xref="paper", yref="paper",
-                                text=f"Current: ${price}<br>Predicted: ${predicted_price:.2f}<br>Change: {change_symbol}{price_change:.1f}%",
-                                showarrow=False,
-                                bgcolor="rgba(255,255,255,0.8)",
-                                bordercolor="gray",
-                                borderwidth=1
-                            )
-                        ]
-                    )
-                    plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
                 except Exception as e:
                     error = f"Prediction failed: {str(e)}"
 
-    return render_template('predict.html', tickers=VALID_TICKERS, prediction=prediction, plot_json=plot_json, error=error)
+    return render_template('predict.html', tickers=VALID_TICKERS, prediction=prediction, error=error)
 
 
 
@@ -268,8 +212,7 @@ def analyze():
         margin=dict(l=20, r=20, t=40, b=20),
         height=340
     )
-    plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('analyze.html', plot_json=plot_json)
+    return render_template('analyze.html')
 
 
 @app.route('/sentiment')

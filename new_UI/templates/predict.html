@@ -42,12 +42,5 @@
 </div>
 {% endif %}
 
-{% if plot_json %}
-<div id="price-plot" style="margin-top: 30px;"></div>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script>
-    var plotly_data = {{ plot_json|safe }};
-    Plotly.newPlot('price-plot', plotly_data.data, plotly_data.layout);
-</script>
-{% endif %}
+
 {% endblock %}
